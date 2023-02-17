@@ -1,0 +1,41 @@
+from starlette.responses import HTMLResponse
+
+
+def get_redoc_html() -> HTMLResponse:
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>LB API DOC</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <!--
+    ReDoc doesn't change outer page styles
+    -->
+    <style>
+        body {{
+        margin: 0;
+        padding: 0;
+        }}
+    </style>
+    </head>
+    <body>
+        <div id="redoc-container"></div>
+            <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.55/bundles/redoc.standalone.min.js"> </script>
+            <script src="https://cdn.jsdelivr.net/gh/wll8/redoc-try@1.4.1/dist/try.js"></script>
+            <script>
+            initTry({{
+            openApi: `lb_api_doc.json`,
+                redocOptions: {{scrollYOffset: 50}},
+            }})
+            </script>
+    </body>
+    </html>
+    """
+    print(html)
+    return HTMLResponse(html)
+
+print(str(get_redoc_html()))

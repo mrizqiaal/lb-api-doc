@@ -1,0 +1,298 @@
+openapi: 3.0.2
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /healthcheck/{n}:
+    get:
+      summary: Healthcheck
+      operationId: healthcheck_healthcheck__n__get
+      parameters:
+        - required: true
+          schema:
+            title: 'N'
+            type: integer
+          name: 'n'
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /ping/smtp/:
+    post:
+      summary: Mass Verify
+      operationId: mass_verify_ping_smtp__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MassVerifyRequestPayload'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '503':
+          description: Service Unavailable
+      security:
+        - HTTPBasic: []
+  /ping_server/:
+    get:
+      summary: List Ping Servers
+      operationId: list_ping_servers_ping_server__get
+      parameters:
+        - required: false
+          schema:
+            title: Skip
+            type: integer
+            default: 0
+          name: skip
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+            default: 100
+          name: limit
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingServerList'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBasic: []
+    post:
+      summary: Create Ping Server
+      operationId: create_ping_server_ping_server__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PingServerCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingServerCreateResult'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBasic: []
+  /ping_server/{hostname}:
+    get:
+      summary: Read Ping Server
+      operationId: read_ping_server_ping_server__hostname__get
+      parameters:
+        - required: true
+          schema:
+            title: Hostname
+            type: string
+          name: hostname
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingServerRead'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBasic: []
+    put:
+      summary: Update Ping Server
+      operationId: update_ping_server_ping_server__hostname__put
+      parameters:
+        - required: true
+          schema:
+            title: Hostname
+            type: string
+          name: hostname
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PingServerUpdate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PingServerRead'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - HTTPBasic: []
+components:
+  schemas:
+    EmailAddressItem:
+      title: EmailAddressItem
+      required:
+        - email_address
+      type: object
+      properties:
+        email_address:
+          title: Email Address
+          type: string
+      example:
+        email_address: jeff@leadbook.com
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    MassVerifyRequestPayload:
+      title: MassVerifyRequestPayload
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          title: Data
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailAddressItem'
+      example:
+        data:
+          - email_address: jeff@leadbook.com
+          - email_address: sumon@leadbook.com
+    PingServerCreate:
+      title: PingServerCreate
+      required:
+        - hostname
+      type: object
+      properties:
+        hostname:
+          title: Hostname
+          type: string
+      example:
+        hostname: lbmailtoday.co
+    PingServerCreateResult:
+      title: PingServerCreateResult
+      required:
+        - hostname
+        - enabled
+        - healthy
+      type: object
+      properties:
+        hostname:
+          title: Hostname
+          type: string
+        enabled:
+          title: Enabled
+          type: boolean
+        healthy:
+          title: Healthy
+          type: boolean
+      example:
+        hostname: lbmailtoday.co
+    PingServerList:
+      title: PingServerList
+      required:
+        - results
+      type: object
+      properties:
+        results:
+          title: Results
+          type: array
+          items:
+            $ref: '#/components/schemas/PingServerRead'
+    PingServerRead:
+      title: PingServerRead
+      required:
+        - hostname
+        - enabled
+        - healthy
+      type: object
+      properties:
+        hostname:
+          title: Hostname
+          type: string
+        enabled:
+          title: Enabled
+          type: boolean
+        healthy:
+          title: Healthy
+          type: boolean
+    PingServerUpdate:
+      title: PingServerUpdate
+      required:
+        - enabled
+      type: object
+      properties:
+        enabled:
+          title: Enabled
+          type: boolean
+      example:
+        enabled: true
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            type: string
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+  securitySchemes:
+    HTTPBasic:
+      type: http
+      scheme: basic
